@@ -5,5 +5,5 @@ Os arquivos contém exemplos simples de como você pode criar um script em Pytho
 
 Arquivos anexados:
 
-- encrypt.py
-- decrypt.py
+- encrypter.py
+- decrypter.py
